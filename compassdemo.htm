@@ -1,0 +1,299 @@
+﻿<html>
+	<head>
+		<title>Compass Demo</title>
+		<link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<style>
+			*:focus
+			{
+				outline: none;
+				position: absolute;
+			}
+			html, body, div
+			{
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+			html, body
+			{
+				height: 100%;
+			}
+			body
+			{
+				background: linear-gradient(to bottom, #484d53 0%,#1f2126 100%);
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+			}
+			#tabs
+			{
+				left: 20px;
+				top: 10px;
+				position: absolute;
+			}
+			.bkg
+			{
+				width: 512px;
+				height: 512px;
+				left: 100px;
+				top: 100px;
+				background-image: url("compass/512bkg.png");
+				position: absolute;
+				z-index: 1;
+			}
+			.sBkg
+			{
+				width: 128px;
+				height: 128px;
+				left: 200px;
+				top: 100px;
+				background-image: url("compass/128bkg.png");
+				position: absolute;
+				z-index: 1;
+			}
+			.needle
+			{
+				width: 512px;
+				height: 512px;
+				left: 100px;
+				top: 100px;
+				background-image: url("compass/512needle.png");
+				position: absolute;
+				z-index: 2;
+			}
+			.sBubble
+			{
+				width: 86px;
+				height: 86px;
+				left: 221px;
+				top: 121px;
+				background-image: url("compass/128bubble.png");
+				position: absolute;
+				z-index: 2;
+			}
+			.sNeedle
+			{
+				width: 128px;
+				height: 128px;
+				left: 200px;
+				top: 100px;
+				background-image: url("compass/128needle.png");
+				position: absolute;
+				z-index: 3;
+			}
+			.sBtn1
+			{
+				left: 350px;
+				top: 140px;
+				position: absolute;
+			}
+			.sBtn2
+			{
+				left: 350px;
+				top: 180px;
+				position: absolute;
+			}
+			.cover
+			{
+				width: 512px;
+				height: 512px;
+				left: 100px;
+				top: 100px;
+				background-image: url("compass/512cover.png");
+				position: absolute;
+				z-index: 3;
+			}
+			.rot
+			{
+				width: 512px;
+				height: 512px;
+				left: 100px;
+				top: 100px;
+				position: absolute;
+				transition: transform 1s linear;
+			}
+			.sRot
+			{
+				width: 128px;
+				height: 128px;
+				left: 200px;
+				top: 100px;
+				position: absolute;
+				transition: transform 1s linear;
+			}
+			.sMove
+			{
+				transition: transform 1s linear;
+			}
+
+			.layer
+			{
+				width: 512px;
+				height: 512px;
+				left: 100px;
+				top: 100px;
+				position: absolute;
+				z-index: 1;
+				transition: opacity 1s ease-out;
+			}
+			.nooffset
+			{
+				left: 0px;
+				top: 0px;
+			}
+			.top
+			{
+				z-index: 9999;
+			}
+		</style>
+		<script>
+
+			function getRandom(min, max)
+			{
+				return min + Math.floor(Math.random() * (max - min + 1));
+			}
+
+			var angle = 0;
+			var layer = 0;
+			var stepX = 0;
+			var stepY = 0;
+			var bkg = '';
+			var stopMoving = false;
+
+			function animate()
+			{
+				angle += getRandom(-20, 20);
+				do
+				{
+					stepX = getRandom(-15, 15);
+					stepY = getRandom(-15, 15);
+				}
+				while (stepX > -2 && stepX < 2 && stepY > -2 && stepY < 2);
+
+				$('.rot').css('transform', 'rotate(' + angle + 'deg)');
+				$('.sRot').css('transform', 'rotate(' + angle + 'deg)');
+
+				if (!stopMoving)
+					$('.sMove').css('transform', 'translate(' + stepX + 'px, ' + stepY + 'px)');
+
+				if (layer < 15)
+				{
+					layer++;
+					$('#l' + layer).css('opacity', '1');
+				}
+				else
+				{
+					restart();
+				}
+			}
+
+			function toCenter()
+			{
+				stopMoving = true;
+				$('.sMove').css('transform', 'translate(0px, 0px)');
+				setTimeout(function()
+				{
+					$('.sMove').css('background', 'url("compass/128bubblegreen.png")');
+				},
+				1000);
+			}
+
+			function disbalance()
+			{
+				stopMoving = false;
+				setTimeout(function()
+				{
+					$('.sMove').css('background', 'url("compass/128bubble.png")');
+				},
+				500);
+			}
+
+			function restart()
+			{
+				layer = 0;
+				$('.layer').css('opacity', '0');
+			}
+
+			$(function()
+			{
+				setInterval(animate, 1000);
+				$('#mode').change(function()
+				{
+					var cur = 1 * $('#mode').val();
+					for (i = 0; i <= 5; i++)
+					{
+						if (cur == i)
+							$('#o' + i).show();
+						else
+							$('#o' + i).hide();
+					}
+					if (cur == 3)
+						restart();
+				});
+				$('#mode').change();
+			});
+
+		</script>
+	</head>
+	<body>
+		<div id="o0">
+			<div class="bkg"></div>
+			<div class="needle rot"></div>
+			<div class="cover"></div>
+		</div>
+		<div id="o1">
+			<div class="bkg rot"></div>
+			<div class="needle"></div>
+			<div class="cover"></div>
+		</div>
+		<div id="o2">
+			<div class="rot">
+				<div class="bkg nooffset"></div>
+				<div class="needle nooffset"></div>
+			</div>
+			<div class="cover"></div>
+		</div>
+		<div id="o3">
+			<div id="l1" class="layer" style="background-image: url('compass/layer1.png');"></div>
+			<div id="l2" class="layer" style="background-image: url('compass/layer2.png');"></div>
+			<div id="l3" class="layer" style="background-image: url('compass/layer3.png');"></div>
+			<div id="l4" class="layer" style="background-image: url('compass/layer4.png');"></div>
+			<div id="l5" class="layer" style="background-image: url('compass/layer5.png');"></div>
+			<div id="l6" class="layer" style="background-image: url('compass/layer6.png');"></div>
+			<div id="l7" class="layer" style="background-image: url('compass/layer7.png');"></div>
+			<div id="l8" class="layer" style="background-image: url('compass/layer8.png');"></div>
+			<div id="l9" class="layer" style="background-image: url('compass/layer9.png');"></div>
+			<div id="l10" class="layer" style="background-image: url('compass/layer10.png');"></div>
+			<div id="l11" class="layer" style="background-image: url('compass/layer11.png');"></div>
+			<div id="l12" class="layer" style="background-image: url('compass/layer12.png');"></div>
+			<div id="l13" class="layer" style="background-image: url('compass/layer13.png');"></div>
+			<div id="l14" class="layer" style="background-image: url('compass/layer14.png');"></div>
+			<div id="l15" class="layer" style="background-image: url('compass/layer15.png');"></div>
+		</div>
+		<div id="o4">
+			<div class="sBkg sRot"></div>
+			<div class="sBubble sMove"></div>
+			<div class="sNeedle sRot"></div>
+			<button class="sBtn1" onclick="toCenter();">Find center</button>
+			<button class="sBtn2" onclick="disbalance();">Disbalance again</button>
+		</div>
+		<div id="o5">
+			<div class="sBkg sRot"></div>
+			<div class="sBubble sMove top"></div>
+			<div class="sNeedle sRot"></div>
+			<button class="sBtn1" onclick="toCenter();">Find center</button>
+			<button class="sBtn2" onclick="disbalance();">Disbalance again</button>
+		</div>
+		<div id="tabs">
+			<select id="mode">
+				<option value="4">[Small] Needle on top</option>
+				<option value="5">[Small] Bubble on top</option>
+				<option value="0">[Large] Needle rotation only</option>
+				<option value="1">[Large] Dial rotation only</option>
+				<option value="2">[Large] Needle and dial rotation</option>
+				<option value="3">[Large] Show layers</option>
+			</select>
+		</div>
+	</body>
+</html>

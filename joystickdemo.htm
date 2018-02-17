@@ -1,0 +1,156 @@
+﻿<html>
+	<head>
+		<title>Joystick Demo</title>
+		<link href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css" rel="stylesheet">
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<style>
+			*:focus
+			{
+				outline: none;
+				position: absolute;
+			}
+			html, body
+			{
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+			body
+			{
+				background: linear-gradient(to bottom, #484d53 0%,#1f2126 100%);
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+			}
+			#joystick
+			{
+				width: 512px;
+				height: 512px;
+				left: 116px;
+				top: 100px;
+				background-image: url("joystick/joystick.png");
+				position: absolute;
+				z-index: 10;
+			}
+			#arrows
+			{
+				width: 686px;
+				height: 685px;
+				left: 30px;
+				top: 15px;
+				background-image: url("joystick/arrows.png");
+				position: absolute;
+				z-index: 10;
+			}
+			#container
+			{
+				left: 206px;
+				top: 135px;
+				width: 340px;
+				height: 405px;
+				position: absolute;
+				z-index: 10;
+			}
+			.gauge-vert
+			{
+				width: 212px;
+				height: 166px;
+				position: absolute;
+				z-index: 10;
+				background-image: url("joystick/gaugeupsprite.png");
+				display: none;
+			}
+			#gaugeup
+			{
+				left: 50px;
+				top: 65px;
+			}
+			#button
+			{
+				width: 329px;
+				height: 335px;
+				position: absolute;
+				z-index: 10;
+				background: url("joystick/button.png");
+				left: 0;
+				top: 0;
+				cursor: n-resize;
+			}
+			#gear
+			{
+				left: 800px;
+				top: 100px;
+				width: 200px;
+				height: 200px;
+				position: absolute;
+				z-index: 10;
+				background: url("joystick/gear.png");
+			}
+		</style>
+		<script>
+			var startPos = { x: 100, y: 100 };
+			var gridStep = 11;
+
+			var angle = 0;
+			var speed = 0;
+
+			function animate()
+			{
+				angle += speed;
+				if (angle >= 360)
+					angle -= 360;
+
+				$('#gear').css('transform', 'rotate(' + angle + 'deg)');
+			}
+
+			function setGaugeUp(step)
+			{
+				if (step > 0)
+				{
+					$('#gaugeup').css('background-position', '' + (step - 1) * -212 + 'px 0px').show();
+				}
+				else
+				{
+					$('#gaugeup').hide();
+				}
+				$('#button').css('transform', 'rotateX(' + (step * 6) + 'deg)');
+
+				speed = step;
+				$('#arrows').css('background-position', (step > 0 ? 686 : 0) + 'px');
+			}
+
+			$(function()
+			{
+				$('#button').draggable(
+				{
+					grid: [gridStep, gridStep],
+					axis: 'y',
+					containment: [0, 145, 0, 200],
+					scroll: false,
+					stop: function(event, ui)
+					{
+						$('#button').css('left', startPos.x).css('top', startPos.y);
+						setGaugeUp(0);
+					},
+					drag: function(event, ui)
+					{
+						var stepY = (startPos.y - ui.position.top) / gridStep;
+						setGaugeUp(stepY);
+					}
+				}).css('left', startPos.x).css('top', startPos.y);
+
+				setInterval(animate, 50);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="arrows"></div>
+		<div id="gaugeup" class="gauge-vert"></div>
+		<div id="joystick">
+			<div id="container"></div>
+			<div id="button"></div>
+		</div>
+		<div id="gear"></div>
+	</body>
+</html>
